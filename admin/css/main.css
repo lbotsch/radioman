@@ -1,0 +1,43 @@
+body {
+    font-family:'lucida grande',tahoma,arial,sans-serif;
+    font-size:11px;
+}
+#header {
+    background: #7F99BE url(images/layout-browser-hd-bg.gif) repeat-x center;
+}
+#header h1 {
+    font-size: 16px;
+    color: #fff;
+    font-weight: normal;
+    padding: 5px 10px;
+}
+#help-panel h2 {
+    padding:10px 10px 0;
+    font-size:12px;
+    color:#000;
+}
+#help-panel p {
+    padding:10px 10px 0;
+}
+#help-panel pre {
+    border-top:1px dotted #ddd;
+    border-bottom:1px dotted #ddd;
+    margin-top:10px;
+    padding:0 5px;
+    background:#f5f5f5;
+}
+#help-panel .details-info {
+    margin:15px;
+    padding:15px;
+    border:1px dotted #999;
+    color:#555;
+    background: #f9f9f9;
+}
+
+.grid-row-insert-below {
+	border-bottom: 2px dashed #7F99BE;
+}
+
+.grid-row-insert-above {
+	border-top: 2px dashed #7F99BE;
+}
