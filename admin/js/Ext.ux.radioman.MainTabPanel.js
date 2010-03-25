@@ -9,19 +9,23 @@ Ext.ux.radioman.MainTabPanel = Ext.extend(Ext.TabPanel, {
 			items: [
 			    {
 			    	id: 'index-tab',
-			    	title: 'Dashboard',
+			    	title: _t('Navigation.Items.Dashboard'),
 			    	
 			    	items: [
 			    	    listenersChart
 			    	]
 			    },
+			    new Ext.ux.radioman.ChannelManager({
+			    	id: 'channel-manager',
+			    	title: _t('ChannelManager.Title')
+			    }),
 			    {
 			    	id: 'library-tab',
-			    	title: 'Media Library',
+			    	title: _t('Navigation.Items.MediaLibrary'),
 			    	layout: 'border',
 			    	items: [
 			    	    new Ext.ux.radioman.LibraryManager({
-			    	    	title: 'Library Manager',
+			    	    	title: _t('LibraryManager.Title'),
 			    	    	id: 'library-manager',
 			    	    	region:'west',
 			    	    	split: true,
@@ -37,7 +41,11 @@ Ext.ux.radioman.MainTabPanel = Ext.extend(Ext.TabPanel, {
 			    	    	region: 'center'
 			    	    })
 			    	]
-			    }
+			    },
+			    new Ext.ux.radioman.ScheduleManager({
+			    	id: 'schedule-manager',
+			    	title: _t('ScheduleManager.Title')
+			    })
 			]
 		});
 		

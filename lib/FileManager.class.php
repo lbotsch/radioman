@@ -1,19 +1,14 @@
 <?php
 
-class FileManager
+class FileManager extends AbstractManager
 {
   private $_fsRoot = "";
   private $_clRoot = "library";
-  private $_response = "";
-  private $_headers = array();
-
+  
   public function __construct($root,$clRoot=null) {
     $this->_fsRoot = $root;
     if($clRoot) $this->_clRoot = $clRoot;
   }
-  
-  public function getResponse() { return $this->_response; }
-  public function getHeaders() { return $this->_headers; }
   
   public function handleRequest($args) {
     $cmd = $args["cmd"];
@@ -39,13 +34,6 @@ class FileManager
       	break;
     }
     
-  }
-  
-  public function sendResponse() {
-    foreach($this->_headers as $h) {
-      header($h);
-    }
-    echo $this->_response;
   }
   
   private function _handleGet($args) {
@@ -83,10 +71,14 @@ class FileManager
           if(!$title) $title = $fileinfo['tags_html']['id3v2']['title'][0];
           $artist = $fileinfo['tags_html']['id3v1']['artist'][0];
           if(!$artist) $artist = $fileinfo['tags_html']['id3v2']['artist'][0];
+          $album = $fileinfo['tags_html']['id3v1']['album'][0];
+          if(!$album) $album = $fileinfo['tags_html']['id3v2']['album'][0];
+          $length = $fileinfo['playtime_seconds'];
           $playtime = $fileinfo['playtime_string'];
           $qtip = ',"qtip":"'
                   . 'Title: '.$title.'<br/>'
                   . 'Artist: '.$artist.'<br/>'
+                  . 'Album: '.$album.'<br/>'
                   . 'Format: '.$fileinfo['audio']['dataformat'].'<br/>'
                   . 'Codec: '.$fileinfo['audio']['codec'].'<br/>'
                   . 'Bitrate: '.sprintf("%.2f",$fileinfo['audio']['bitrate'] / 1024).'kbit '.$fileinfo['audio']['bitrate_mode'].'<br/>'
@@ -94,6 +86,8 @@ class FileManager
                   . 'Playtime: '.$playtime.'"';
           $title = ', "title": "'.$title.'"';
           $artist = ', "artist": "'.$artist.'"';
+          $album = ', "album": "'.$album.'"';
+          $length = ', "length": "'.$length.'"';
           $playtime = ', "playtime": "'.$playtime.'"';
         } else {
           $qtip = ',"qtip":"Filesize: '.sprintf("%.2f",filesize($path."/".$e) / 1024).'kb"';
@@ -101,7 +95,7 @@ class FileManager
         
         $itemPath = ', "path": "'.$args["path"].'/'.$e.'"';
       }
-      $files[] = '{"text":"'.$e.'","iconCls":"'.$ft.'","disabled":false,"leaf":'.($ft == "folder" ? "false" : "true").$qtip.$itemPath.$title.$artist.$playtime.'}';
+      $files[] = '{"text":"'.$e.'","iconCls":"'.$ft.'","disabled":false,"leaf":'.($ft == "folder" ? "false" : "true").$qtip.$itemPath.$title.$artist.$album.$length.$playtime.'}';
     }
     $this->_response = '['.implode(",", $files).']';
     return true;
@@ -206,6 +200,10 @@ class FileManager
   	if(!$args["path"]) return false;
   	$path = $this->_getServerPath($args["path"]);
   	$this->_output_file($path, basename($path));
+  }
+  
+  public static function getServerPath($path) {
+  	return str_replace(Config::MUSIC_LIBRARY_ROOT, Config::MUSIC_LIBRARY_PATH, $path);
   }
   
   private function _getServerPath($path) {

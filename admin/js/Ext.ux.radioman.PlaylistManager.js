@@ -7,17 +7,17 @@ Ext.ux.radioman.PlaylistGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 	store: null,
 	initComponent: function() {
 		var addPlaylistButton = new Ext.Button({
-			text: 'Add Playlist'
+			text: _t('PlaylistManager.PlaylistGrid.Add')
 		});
 		addPlaylistButton.on('click', this.handleAddPlaylist, this);
 		
 		var removePlaylistButton = new Ext.Button({
-			text: 'Remove Playlist'
+			text: _t('PlaylistManager.PlaylistGrid.Remove')
 		});
 		removePlaylistButton.on('click', this.handleRemovePlaylist, this);
 		
 		var editPlaylistButton = new Ext.Button({
-			text: 'Edit Playlist'
+			text: _t('PlaylistManager.PlaylistGrid.Edit')
 		});
 		editPlaylistButton.on('click', this.handleEditPlaylist, this);
 		
@@ -43,7 +43,7 @@ Ext.ux.radioman.PlaylistGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 			columns: [
 				{
 			        id:'name',
-			        header: 'Name',
+			        header: _t('PlaylistManager.PlaylistGrid.NameCol'),
 			        width: 360,
 			        sortable: true,
 			        dataIndex: 'name',
@@ -51,7 +51,7 @@ Ext.ux.radioman.PlaylistGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 			          allowBlank: false
 			        })
 			    }, {
-			        header: 'Songs',
+			        header: _t('PlaylistManager.PlaylistGrid.SongsCol'),
 			        width: 75,
 			        sortable: true,
 			        dataIndex: 'songs'
@@ -99,12 +99,12 @@ Ext.ux.radioman.PlaylistGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 				var resp = Ext.decode(response.responseText);
 				o.record.store.reload();
 				if(resp.status != "success") {
-					Ext.Msg.alert('Error', 'An error occurred while trying to edit the playlist name.');
+					Ext.Msg.alert(_t('Common.Error'), _t('PlaylistManager.PlaylistGrid.EditError'));
 				}
 			},
 			failure: function(r, o) {
 				o.record.store.reload();
-				Ext.Msg.alert('Error', 'An error occurred while trying to edit the playlist name.');
+				Ext.Msg.alert(_t('Common.Error'), _t('PlaylistManager.PlaylistGrid.EditError'));
 			},
 			scope: this
 		});
@@ -116,25 +116,26 @@ Ext.ux.radioman.PlaylistGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 		Ext.Ajax.request({
 			url: 'playlist-mgr.php',
 			method: 'POST',
-			params: {cmd: 'createPlaylist', name: 'New Playlist'},
+			params: {cmd: 'createPlaylist', name: _t('PlaylistManager.PlaylistGrid.NewPlaylistName')},
 			success: function(response) {
 				var resp = Ext.decode(response.responseText);
 				if(resp.status == "success") {
 				
 					var Playlist = this.getStore().recordType;
 			        var p = new Playlist({
-			            name: 'New Playlist',
+			            name: _t('PlaylistManager.PlaylistGrid.NewPlaylistName'),
+			            playlist_id: resp.playlist_id,
 			            songs: 0
 			        });
 			        this.stopEditing();
 			        this.getStore().insert(0, p);
 			        this.startEditing(0, 0);
 				} else {
-					Ext.Msg.alert('Error', 'An error occurred while trying to create the playlist.');
+					Ext.Msg.alert(_t('Common.Error'), _t('PlaylistManager.PlaylistGrid.CreateError'));
 				}
 			},
 			failure: function() {
-				Ext.Msg.alert('Error', 'An error occurred while trying to create the playlist.');
+				Ext.Msg.alert(_t('Common.Error'), _t('PlaylistManager.PlaylistGrid.CreateError'));
 			},
 			scope: this
 		});
@@ -143,7 +144,8 @@ Ext.ux.radioman.PlaylistGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 	handleRemovePlaylist: function() {
 		var selection = this.getSelectionModel().getSelected();
 		if(!selection) return false;
-        Ext.Msg.confirm('Delete playlist?', 'Do you really want to delete playlist "'+selection.data.name+'"?', function(btn){
+        Ext.Msg.confirm(_t('PlaylistManager.PlaylistGrid.DeleteMsgTitle'),
+        		_t('PlaylistManager.PlaylistGrid.DeleteMsgBody', selection.data.name), function(btn){
           if(btn == "yes") {
         	  Ext.Ajax.request({
       			url: 'playlist-mgr.php',
@@ -155,11 +157,11 @@ Ext.ux.radioman.PlaylistGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 	      				this.stopEditing();
 	      				this.getStore().remove(selection);
       				} else {
-      					Ext.Msg.alert('Error', 'An error occurred while trying to delete the playlist.');
+      					Ext.Msg.alert(_t('Common.Error'), _t('PlaylistManager.PlaylistGrid.DeleteError'));
       				}
       			},
       			failure: function() {
-      				Ext.Msg.alert('Error', 'An error occurred while trying to delete the playlist.');
+      				Ext.Msg.alert(_t('Common.Error'), _t('PlaylistManager.PlaylistGrid.DeleteError'));
       			},
       			scope: this
         	  });
@@ -186,10 +188,10 @@ Ext.ux.radioman.PlaylistEditor = Ext.extend(Ext.grid.GridPanel, {
 	autoExpandColumn: 'title',
 	initComponent: function() {
 		var removeItemButton = new Ext.Button({
-			text: 'Remove'
+			text: _t('PlaylistManager.PlaylistEditor.Remove')
 		});
 		var savePlaylistButton = new Ext.Button({
-			text: 'Save Playlist'
+			text: _t('PlaylistManager.PlaylistEditor.Save')
 		});
 		
 		removeItemButton.on('click', this.handleRemoveItem, this);
@@ -205,6 +207,8 @@ Ext.ux.radioman.PlaylistEditor = Ext.extend(Ext.grid.GridPanel, {
 					    {name: 'path'},
 					    {name: 'title'},
 					    {name: 'artist'},
+					    {name: 'album'},
+					    {name: 'length'},
 					    {name: 'playtime'}
 					]
 				})
@@ -215,19 +219,26 @@ Ext.ux.radioman.PlaylistEditor = Ext.extend(Ext.grid.GridPanel, {
 			columns: [
 	            {
 	            	id: 'title',
-	            	header: 'Title',
+	            	header: _t('PlaylistManager.PlaylistEditor.TitleCol'),
 	            	dataIndex: 'title',
 	            	sortable: false
 	            }, {
-	            	header: 'Artist',
+	            	header: _t('PlaylistManager.PlaylistEditor.ArtistCol'),
 	            	dataIndex: 'artist',
+	            	width: 180,
 	            	sortable: false
 	            }, {
-	            	header: 'Playtime',
+	            	header: _t('PlaylistManager.PlaylistEditor.AlbumCol'),
+	            	dataIndex: 'album',
+	            	width: 180,
+	            	sortable: false,
+	            	hidden: true
+	            }, {
+	            	header: _t('PlaylistManager.PlaylistEditor.PlaytimeCol'),
 	            	dataIndex: 'playtime',
 	            	sortable: false
 	            }, {
-	            	header: 'Path',
+	            	header: _t('PlaylistManager.PlaylistEditor.PathCol'),
 	            	dataIndex: 'path',
 	            	width: 220,
 	            	sortable: false,
@@ -237,7 +248,7 @@ Ext.ux.radioman.PlaylistEditor = Ext.extend(Ext.grid.GridPanel, {
 		    bbar: new Ext.Toolbar({
 		    	items: [
 				    removeItemButton,
-				    '->',
+				    '-',
 			        savePlaylistButton
 				]
 			})
@@ -263,19 +274,36 @@ Ext.ux.radioman.PlaylistEditor = Ext.extend(Ext.grid.GridPanel, {
 		//Ext.Msg.alert('Status', 'Editing playlist '+playlist.data.name+'.');
 	},
 	handleRemoveItem: function() {
-		var selection = this.getSelectionModel().getSelected();
-		Ext.Msg.confirm('Delete item?', 'Do you really want to delete the item "'+selection.data.title+'"?', function(btn){
+		var selections = this.getSelectionModel().getSelections();
+		var items = "";
+		for(var i = 0, len = selections.length; i < len; i++) {
+			items += "<br/>\n"+selections[i].data.title+" - "+selections[i].data.artist;
+		}
+		Ext.Msg.confirm(_t('PlaylistManager.PlaylistEditor.DeleteMsgTitle'), _t('PlaylistManager.PlaylistEditor.DeleteMsgBody')+items, function(btn){
 			if(btn == "yes") {
-				this.getStore().remove(selection);
+				this.getStore().remove(selections);
 			}
         }, this);
 	},
 	handleSavePlaylist: function() {
+		if(!this.playlist) {
+			Ext.Msg.alert(_t('Common.Error'), _t('PlaylistManager.PlaylistEditor.NoSelectionError'));
+			Ext.getCmp('playlist-grid-panel').expand(true);
+			return false;
+		}
+		
 		var pl = [];
 		var st = this.getStore();
 		for(var i = 0; i < st.getCount(); i++) {
 			var item = st.getAt(i).data;
-			pl[i] = {path: item.path, title: item.title, artist: item.artist, playtime: item.playtime};
+			pl[i] = {
+				path: item.path,
+				title: item.title,
+				artist: item.artist,
+				album: item.album,
+				length: item.length,
+				playtime: item.playtime
+			};
 		}
 		pl = Ext.util.JSON.encode({items: pl});
 		
@@ -290,20 +318,20 @@ Ext.ux.radioman.PlaylistEditor = Ext.extend(Ext.grid.GridPanel, {
 				if(resp.status == "success") {
 					this.playlist.record.data.songs = o.songs;
 					this.playlist = null;
-					this.getStore().removeAll(true);
-					
-					this.expand(false);
+					this.getStore().removeAll();
+					var plGrid = Ext.getCmp('playlist-grid-panel');
+					plGrid.getStore().reload();
+					plGrid.expand(true);
 					this.fireEvent('playlistsaved', o.playlist, o.songs);
 				} else {
-					Ext.Msg.alert('Error', 'An error occurred while trying to save the playlist.');
+					Ext.Msg.alert(_t('Common.Error'), _t('PlaylistManager.PlaylistEditor.SaveError'));
 				}
 			},
 			failure: function() {
-				Ext.Msg.alert('Error', 'An error occurred while trying to save the playlist.');
+				Ext.Msg.alert(_t('Common.Error'), _t('PlaylistManager.PlaylistEditor.SaveError'));
 			},
 			scope: this
 		});
-		Ext.Msg.alert('Status', 'Saving playlist '+this.playlist.name+'.'+pl);
 	}
 });
 
@@ -312,7 +340,7 @@ Ext.ux.radioman.PlaylistManager = Ext.extend(Ext.Panel, {
 	
 	initComponent: function() {
 		var playlistGridPanel = new Ext.ux.radioman.PlaylistGridPanel({
-        	title: 'Playlists',
+        	title: _t('PlaylistManager.PlaylistGrid.Title'),
         	id: 'playlist-grid-panel',
         	border: false,
 	      	split: true,
@@ -324,7 +352,7 @@ Ext.ux.radioman.PlaylistManager = Ext.extend(Ext.Panel, {
         });
 		
 		var playlistEditor = new Ext.ux.radioman.PlaylistEditor({
-        	title: 'Playlist Editor',
+        	title: _t('PlaylistManager.PlaylistEditor.Title'),
         	id: 'playlist-editor-panel'
         });
 		

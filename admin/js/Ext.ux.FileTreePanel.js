@@ -259,6 +259,7 @@ Ext.ux.FileTreePanel = Ext.extend(Ext.tree.TreePanel, {
 	 * @cfg {String} url URL to use when communicating with server
 	 */
 	,url:'filetree.php'
+		
 	// }}}
 
 	// overrides

@@ -2,10 +2,9 @@
 
 // TODO: Check for user authenticity!!!
 
-require_once 'config.php';
-require_once 'lib/file-mgr.class.php';
+require_once '../config.inc.php';
 
-$mgr = new FileManager(LIBRARY_PATH, LIBRARY_ROOT);
+$mgr = new FileManager(Config::MUSIC_LIBRARY_PATH, Config::MUSIC_LIBRARY_ROOT);
 $mgr->handleRequest($_REQUEST);
 $mgr->sendResponse();
 

@@ -1,19 +1,14 @@
 <?php
 
-class PlaylistManager
+class PlaylistManager extends AbstractManager
 {
 	private $_fsRoot = "";
 	private $_clRoot = "library";
-	private $_response = "";
-	private $_headers = array();
 	
 	public function __construct($root,$clRoot=null) {
 		$this->_fsRoot = $root;
 		if($clRoot) $this->_clRoot = $clRoot;
 	}
-	
-	public function getResponse() { return $this->_response; }
-	public function getHeaders() { return $this->_headers; }
 	
 	public function handleRequest($args) {
 		$cmd = $args["cmd"];
@@ -41,13 +36,6 @@ class PlaylistManager
 				$this->_response = "Error: Unimplemented Method!";
 				break;
 		}
-	}
-	
-	public function sendResponse() {
-		foreach($this->_headers as $h) {
-			header($h);
-		}
-		echo $this->_response;
 	}
 	
 	private function _handleLoadPlaylists($args) {
@@ -78,7 +66,7 @@ class PlaylistManager
 		}
 		
 		$name = $args["name"];
-		if(false === Db::getInstance()->execNoneQuery("INSERT INTO `playlists` (`name`) VALUES ('$name');")) {
+		if(false === Db::getInstance()->execNoneQuery("INSERT INTO `playlists` (`name`) VALUES ('".mysql_real_escape_string($name)."');")) {
 			$this->_response = '{"status": "error", "error": "'.Db::getInstance()->getLastError().'"}';
 			return false;
 		}
@@ -96,7 +84,7 @@ class PlaylistManager
 		
 		$id = $args["id"];
 		$name = $args["name"];
-		if(false === Db::getInstance()->execNoneQuery("UPDATE `playlists` SET `name` = '$name' WHERE id = $id;")) {
+		if(false === Db::getInstance()->execNoneQuery("UPDATE `playlists` SET `name` = '".mysql_real_escape_string($name)."' WHERE id = $id;")) {
 			$this->_response = '{"status": "error", "error": "'.Db::getInstance()->getLastError().'"}';
 			return false;
 		}
@@ -137,6 +125,8 @@ class PlaylistManager
 			$playlistItems[] = '{"path": "'.$r["path"].'", '
 					.'"title": "'.$r["title"].'", '
 					.'"artist": "'.$r["artist"].'", '
+					.'"album": "'.$r["album"].'", '
+					.'"length": "'.$r["length"].'", '
 					.'"playtime": "'.$r["playtime"].'"}';
 		}
 		$this->_response = '['.implode(", ", $playlistItems).']';
@@ -160,10 +150,15 @@ class PlaylistManager
 		$query = array();
 		$i = 0;
 		foreach($data as $item) {
-			$query[] = "($id, '$item->path', '$item->title', '$item->artist', '$item->playtime', $i)";
+			$query[] = "($id, '".mysql_real_escape_string($item->path)
+				."', '".mysql_real_escape_string($item->title)
+				."', '".mysql_real_escape_string($item->artist)
+				."', '".mysql_real_escape_string($item->album)
+				."', '".mysql_real_escape_string($item->length)
+				."', '".mysql_real_escape_string($item->playtime)."', $i)";
 			$i++;
 		}
-		$query = "INSERT INTO playlist_item (playlists_id, path, title, artist, playtime, `index`) VALUES ".implode(", ", $query);
+		$query = "INSERT INTO playlist_item (playlists_id, path, title, artist, album, length, playtime, `index`) VALUES ".implode(", ", $query);
 		if(false === Db::getInstance()->execNoneQuery($query)) {
 			$this->_response = '{"status": "error", "error": "'.Db::getInstance()->getLastError().'"}';
 			return false;

@@ -23,7 +23,7 @@ Ext.ux.radioman.Navigation = Ext.extend(Ext.Panel, {
 				 },
 				 new Ext.tree.TreePanel({
 					 id: 'ra-nav-tree-panel',
-					 title: 'Navigation',
+					 title: _t('Navigation.Title'),
 				     region:'center',
 				     split: true,
 				      height: 300,
@@ -37,29 +37,28 @@ Ext.ux.radioman.Navigation = Ext.extend(Ext.Panel, {
 				      useArrows: true,
 				      
 				      root: {
-				        text: 'Navigation',
 				        expanded: true,
 				        children: [{
-				            text: 'Index',
+				            text: _t('Navigation.Items.Dashboard'),
 				            leaf: true,
 				            id: 'nav-index',
 				            listeners: {
 				        		click: function() {
 				        			Ext.DomHelper.overwrite(
 				        					Ext.DomQuery.selectNode('div#help-panel div.x-panel-body'),
-				        					'<h2>Index</h2><p class="details-info">Shows server statistics</p>');
+				        					_t('Navigation.HelpPanel.Items.Dashboard'));
 				        			Ext.getCmp('main-tab-panel').setActiveTab('index-tab');
 				        		}
 				        	}
 				          }, {
-				            text: 'Media Library',
+				            text: _t('Navigation.Items.MediaLibrary'),
 				            leaf: true,
 				            id: 'nav-library',
 				            listeners: {
 				        		click: function() {
 				        			Ext.DomHelper.overwrite(
 				        					Ext.DomQuery.selectNode('div#help-panel div.x-panel-body'),
-				        					'<h2>Media Library</h2><p class="details-info">Upload your music files, edit metatags and manage your library.</p>');
+				        					_t('Navigation.HelpPanel.Items.MediaLibrary'));
 				        			Ext.getCmp('main-tab-panel').setActiveTab('library-tab');
 				        		}
 				        	}
@@ -68,12 +67,12 @@ Ext.ux.radioman.Navigation = Ext.extend(Ext.Panel, {
 				      }
 				  }), {
 					 	id: 'help-panel',
-					    title: 'Help',
+					    title: _t('Navigation.HelpPanel.Title'),
 					    region: 'south',
 					    height: 180,
 					    bodyStyle: 'padding:4px;padding-bottom:15px;background:#eee;',
 						autoScroll: true,
-						html: '<p class="details-info">When you select an item from the menu, additional details will display here.</p>'
+						html: _t('Navigation.HelpPanel.Items.Dashboard')
 				  }
 			]
 		});
