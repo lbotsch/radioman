@@ -39,6 +39,12 @@ if(false === $res) {
 	exit(1);
 }
 
+if(false === $db->execNoneQuery("UPDATE `channels` SET `running` = 1")) {
+	if(DEBUG)
+		print "[ERROR] ".$db->getLastError()."\n";
+	exit(1);
+}
+
 $channels = array();
 foreach($res as $r) {
 	$channels[] = $r["mount"]."|".$r["name"]."|".$r["genre"]."|".$r["description"];

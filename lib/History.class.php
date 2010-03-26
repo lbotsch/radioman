@@ -219,14 +219,47 @@ class History
 	 */
 	private function _updateNextItem($next) {
 		// Move last played item to history
-		if($this->_nextItem)
+		if($this->_nextItem) {
 			$this->_lastItems[] = $this->_nextItem;
+			$this->_addHistoryItemToDb($this->_nextItem);
+		}
 		
 		// Shift oldest item if history gets too big
 		if(count($this->_lastItems) > Config::HISTORY_MAX_SIZE)
 			array_shift($this->_lastItems);
 		
 		$this->_nextItem = $next;
+	}
+	
+	/**
+	 * 
+	 * @param HistoryItem $item
+	 */
+	private function _addHistoryItemToDb($item) {
+		$res = Db::getInstance()->execNoneQuery(
+		"INSERT INTO `history` ("
+			."`created_at`,"
+			."`channel`,"
+			."`playlists_id`,"
+			."`title`,"
+			."`path`,"
+			."`artist`,"
+			."`playtime`,"
+			."`index`,"
+			."`album`,"
+			."`length`"
+		.") SELECT "
+			."NOW(),"
+			."'$this->_channel',"
+			."`playlists_id`,"
+			."`title`,"
+			."`path`,"
+			."`artist`,"
+			."`playtime`,"
+			."`index`,"
+			."`album`,"
+			."`length`"
+		." FROM `playlist_item` WHERE `id` = $item->item_id");
 	}
 }
 
