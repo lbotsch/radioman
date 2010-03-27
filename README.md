@@ -35,27 +35,36 @@ Tested on Ubuntu 9.10 Karmic
 
 ## Install
 
--	Extract the tarball to a directory [RADIOMAN].
--	Install all prerequists. Please refer to the project pages for further instructions.
--	Create the mysql database.
--	Create the table structure using the installscript [RADIOMAN]/database.sql.
--	Edit the [RADIOMAN]/config.inc.php file to your needs.
--	Configure your apache server to point to [RADIOMAN]/admin.
--	Configure your icecast2 server.
--	Copy the [RADIOMAN]/liquidsoap/radio.liq file to /etc/liquidsoap/
--	Edit the /etc/liquidsoap/radio.liq file  and change first section of the file to your
+1.	Extract the tarball to a directory [RADIOMAN].
+2.	Install all prerequists. Please refer to the project pages for further instructions.
+3.	Create the mysql database.
+4.	Create the table structure using the installscript [RADIOMAN]/database.sql.
+5.	Edit the [RADIOMAN]/config.inc.php file to your needs.
+6.	Configure your apache server to point to [RADIOMAN]/admin.
+7.	Configure your icecast2 server.
+8.	Copy the [RADIOMAN]/liquidsoap/radio.liq file to /etc/liquidsoap/
+9.	Edit the /etc/liquidsoap/radio.liq file  and change first section of the file to your
 	needs.
--	Start apache2.
--	Navigate to http://localhost (or any other host depending on your apache configuration)
--	Select the channel tab. Add a new channel.
--	Start the icecast2 server.
--	Start liquidsoap.
-
+10.	Start apache2.
+11.	Navigate to http://localhost (or any other host depending on your apache configuration)
+12.	Select the channel tab. Add a new channel.
+13.	Start the icecast2 server.
+14.	Start liquidsoap.
+15. Start managing your library, creating your playlists and scheduling them on your channel.
 
 Note: For security reasons you should restrict the access to the admin directory of your host.
 Refer to the apache2 manual for more information on securing access to a directory.
 
 ## Usage
+
+### Dashboard
+
+### Channels
+
+### Library
+
+### Schedules
+
 
 ## TODO
 
